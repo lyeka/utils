@@ -1,0 +1,53 @@
+version: "3"
+services:
+    mysql00:
+        image: mysql:5.7
+        container_name: mysql00
+        volumes:
+            - db-data:/var/lib/mysql
+        restart: always
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: "dockermysql"
+        networks:
+            - net-mysql
+
+
+    # 自定义mysql配置
+    # 开启binlog
+    mysql10:
+        image: mysql:5.7
+        container_name: mysql10
+        volumes:
+            - db-data10:/var/lib/mysql
+            - ./conf/mysql:/etc/mysql
+        restart: always
+        ports:
+            - "3308:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: "dockermysql"
+        networks:
+            - net-mysql
+
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: tets-phpmyadmin
+        restart: always
+        ports:
+            - "8081:80"
+        environment:
+            PMA_HOSTS: mysql00, mysql10
+            PMA_VERBOSES: mysql00, mysql10
+            UPLOAD_LIMIT: 20000000
+        networks:
+            - net-mysql
+
+networks:
+    net-mysql:
+
+volumes:
+    db-data:
+    db-data10:
+
